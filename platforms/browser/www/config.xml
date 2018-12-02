@@ -2,11 +2,13 @@
 <widget id="com.TicTacToe.anish98821" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Tic-Tac-Toe!</name>
     <description>
-        A blank PhoneGap app.
+        An unbeatable AI Tic Tac Toe game.
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="anish98821@hotmail.com" href="https://github.com/Anish98821.com">
+        Anish U
     </author>
+    <icon src="logo.png" />
     <content src="index.html" />
     <access origin="*" />
+    <preference name="orientation" value="portrait" />
 </widget>

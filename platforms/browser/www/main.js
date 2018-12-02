@@ -1,3 +1,12 @@
+/*Welcome to the source code for AI Tic-Tac-Toe,the Tic-Tac-Toe game that
+  you can never beat. Note that this does not mean that the computer always 
+  wins against the player. This simply means that the the game always end in a
+  draw or the computer wins. This is because if two experienced players are
+  playing against each other then the game will always end in draw.I have divided 
+  the code into several small sections.Ok now on with the code.. 
+ */
+///////////////////////////////////////////////////////////////// 
+//Some basic variable declarions etc. I dont think I need to explain them. 
 playerSpace = []
 playerPoints = 0
 compPoints = 0 
@@ -5,23 +14,33 @@ compSpace= []
 filledSpaces = 0
 varGameOver = false
 center = document.getElementById("22")
-console.log(center.onclick)
 cornerSpaces = [document.getElementById('11'),
 				document.getElementById('13'),
 				document.getElementById('31'),
-				document.getElementById('33')]
-freeSpace = document.getElementsByClassName('free')
-firstChance = true
+				document.getElementById('33')]//Array of all corner pieces
+freeSpace = document.getElementsByClassName('free')//Bascically an array af all "playable" spaces 
+firstChance = true//Variable to check if its the computer's first chance. You will know why later. 
 whoseTurn = 'computer'
+///////////////////////////////////////////////////////////////////
 function onClick(row,column)
+/*Ok. Now the way this program works is by marking a space either randomly or by blocking a potential
+ straight line by the player.
+ This function executes any time the player marks an unmarked space */
 {
+/////////////////////////////////////////////////////////////////////////////////
+//This section just changes the attributes of the clicked square
 	temp = document.getElementById(row+column)
 	temp.src = 'x.png'
 	temp.onclick = ''
 	temp.className = 'player'
 	filledSpaces += 1
 	playerSpace.push(row+column)
+//////////////////////////////////////////////////////////////////////////////////
 	if(firstChance)
+	/*This section executes if its the computer's first chance.Any experienced player will tell
+	you that your first move should be either on the corner or the center.This way ensure atleast
+	a draw. 
+	*/
 	{
 		if(center.className == 'free')
 		{
@@ -30,10 +49,7 @@ function onClick(row,column)
 		center.className = 'computer'
 		compSpace.push(center.id)
 		filledSpaces += 1
-		//whoseTurn = 'player'
 		firstChance = false
-		console.log("FirstChance: Center\nId:"+center.id+"\nWhose turn:"+whoseTurn)
-		console.log(playerSpace)
 		return
 		}
 		else
@@ -50,16 +66,21 @@ function onClick(row,column)
 		compSpace.push(selected.id)
 		firstChance = false
 		filledSpaces += 1
-		console.log("FirstChance: Corner\nId:"+center.id+"\nWhose turn:"+whoseTurn)
-		console.log(playerSpace)
 		return
 	}
-}		
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////		
+// These functions are explained during their definations.
+//In short these functions check for potential straight lines on the player's side and blocks them.
 	if(allCompChecks())
 	if (rowCheck() != 'blocked' && varGameOver == false)
 	if (columnCheck() != 'blocked' && varGameOver == false)
 	if (rightDiagonalCheck() != 'blocked' && varGameOver == false)
 	leftDiagonalCheck()
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*Something that I noticed during testing was that the player was able to win the match sometimes
+if the computer didn't mark on the corner if some of the corners were avalible. So this section ensure
+ that the computer always marks the corners if they are avalible*/  
 	if(whoseTurn == 'computer' && varGameOver == false)
 	{
 	freeCornerSpaces = []
@@ -74,15 +95,14 @@ function onClick(row,column)
 	selected.className = 'computer'
 	filledSpaces += 1
 	compSpace.push(selected.id)
-	console.log("generated Randomly(corner): \nId:"+selected.id+"\nWhose turn:"+whoseTurn)
-	console.log(playerSpace)
 	}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	else
 	{
-	console.log("filled :" + filledSpaces)	
-	if(filledSpaces == 9)
+	if(filledSpaces == 9)//Executes when all spaces are marked i.e. the game ends in a draw. 
 	alert('Its a draw!')
-	else{	
+	else//Executes when there are no potential threats.
+	{	
 	freeSpace = document.getElementsByClassName('free')
 	selected = freeSpace[Math.floor(Math.random() * freeSpace.length)]
 	selected.src = "o.png"
@@ -90,13 +110,16 @@ function onClick(row,column)
 	selected.className = 'computer'
 	filledSpaces += 1
 	compSpace.push(selected.id)
-	console.log("generated Randomly: \nId:"+selected.id+"\nWhose turn:"+whoseTurn)
-	console.log(playerSpace)
 	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
 }
 }
 function rowCheck()
+/*This function checks if there are potential "threats" in the form of rows.
+The way it works is by comparing the first part of the id of an space occupied 
+by the player to others and blocking them if a match is found.
+*/
 {
 	inARow = 0
 	for(i = 0; i < playerSpace.length; i++)
@@ -106,7 +129,7 @@ function rowCheck()
 		if(playerSpace[i][0] == playerSpace[j][0])
 		{
 			inARow += 1
-			blockResult = block(playerSpace[i][0].toString(),logic(playerSpace[i][1],playerSpace[j][1]),"rowCheck")
+			blockResult = block(playerSpace[i][0].toString(),logic(playerSpace[i][1],playerSpace[j][1]))
 			whoseTurn = 'player'
 			if(blockResult)return "blocked"
 		}
@@ -126,6 +149,7 @@ function rowCheck()
 }
 function columnCheck()
 {
+//Same logic as in rows but does it columns
 	inAColumn = 0
 	for(i = 0; i < playerSpace.length; i++)
 	{
@@ -134,7 +158,7 @@ function columnCheck()
 		if(playerSpace[i][1] == playerSpace[j][1])
 		{
 			inAColumn += 1
-			blockResult = block(logic(playerSpace[i][0],playerSpace[j][0]),playerSpace[j][1].toString(),"columnCheck")
+			blockResult = block(logic(playerSpace[i][0],playerSpace[j][0]),playerSpace[j][1].toString())
 			whoseTurn = 'player'
 			if(blockResult)return "blocked"
 		}
@@ -155,6 +179,9 @@ function columnCheck()
 
 function rightDiagonalCheck()
 {
+/*Checks for a diagonal tilting towards the right ie like this "/". If you observe, you will notice that
+the x and y part of the id adds upto 4. I used this as an method to identify "right diagonals"    
+*/
 	inRightDiagonal = []
 	for(i = 0; i < playerSpace.length; i++)
 	{
@@ -163,7 +190,7 @@ function rightDiagonalCheck()
 }
 	if(inRightDiagonal.length == 2)
 	{
-		blockResult = block(logic(inRightDiagonal[0][0],inRightDiagonal[1][0]),logic(inRightDiagonal[0][1],inRightDiagonal[1][1]),"rDiagonalcheck")
+		blockResult = block(logic(inRightDiagonal[0][0],inRightDiagonal[1][0]),logic(inRightDiagonal[0][1],inRightDiagonal[1][1]))
 		whoseTurn = 'player'
 		if(blockResult)return "blocked"
 		else
@@ -186,6 +213,7 @@ function rightDiagonalCheck()
 
 function leftDiagonalCheck()
 {
+//Same as right diagonals but instead operates on left side tilting diagonals
 	inLeftDiagonal = []
 	for(i = 0; i < playerSpace.length; i++)
 	{
@@ -195,7 +223,7 @@ function leftDiagonalCheck()
 	if(inLeftDiagonal.length == 2)
 	{
 
-		blockResult = block(logic(inLeftDiagonal[0][0],inLeftDiagonal[1][0]),logic(inLeftDiagonal[0][1],inLeftDiagonal[1][1]),"lDiagonalcheck")
+		blockResult = block(logic(inLeftDiagonal[0][0],inLeftDiagonal[1][0]),logic(inLeftDiagonal[0][1],inLeftDiagonal[1][1]))
 		whoseTurn = 'player'
 		if(blockResult)return "blocked"
 		else
@@ -217,6 +245,8 @@ function leftDiagonalCheck()
 
 function allCompChecks()
 {
+/*Basically a combination of all previous checks but instead checks on the computer occupied space and blocks itself.
+This is necessary since we dont want the computer to slip an opportunity to win*/ 
 inARow = 0
 inAColumn = 0
 inRightDiagonalComp = []
@@ -242,7 +272,7 @@ inLeftDiagonalComp = []
 /////////////////////////////////////////////////////Column Check////////////////////////////////////////////////////
 		else if(compSpace[i][1] == compSpace[j][1])
 		{
-			blockResult = block(logic(compSpace[i][0],compSpace[j][0]),compSpace[j][1].toString(),"CompcolumnCheck")
+			blockResult = block(logic(compSpace[i][0],compSpace[j][0]),compSpace[j][1].toString())
 			if(blockResult)
 			{
 				alert("Computer won!")
@@ -257,13 +287,12 @@ inLeftDiagonalComp = []
 ///////////////////////////////////////////////////////Right Diagonal Check//////////////////////////////////////////////////////////////	
 	for(k=0;k < compSpace.length;k++)
 	{
-	//console.log("Compspace[k] = "+compSpace[k])
 	if(parseInt(compSpace[k][0]) + parseInt(compSpace[k][1])==4)
 	{
 	inRightDiagonalComp.push(compSpace[k])
 	if(inRightDiagonalComp.length == 2)
 	{
-		blockResult = block(logic(inRightDiagonalComp[0][0],inRightDiagonalComp[1][0]),logic(inRightDiagonalComp[0][1],inRightDiagonalComp[1][1]),"ComprDiagonalcheck")
+		blockResult = block(logic(inRightDiagonalComp[0][0],inRightDiagonalComp[1][0]),logic(inRightDiagonalComp[0][1],inRightDiagonalComp[1][1]))
 		whoseTurn = 'player'
 		if(blockResult)
 		{
@@ -291,7 +320,7 @@ inLeftDiagonalComp = []
 	inLeftDiagonalComp.push(compSpace[k])
 	if(inLeftDiagonalComp.length == 2)
 	{
-		blockResult = block(logic(inLeftDiagonalComp[0][0],inLeftDiagonalComp[1][0]),logic(inLeftDiagonalComp[0][1],inLeftDiagonalComp[1][1]),"ComplDiagonalcheck")
+		blockResult = block(logic(inLeftDiagonalComp[0][0],inLeftDiagonalComp[1][0]),logic(inLeftDiagonalComp[0][1],inLeftDiagonalComp[1][1]))
 		whoseTurn = 'player'
 		if(blockResult)
 		{
@@ -319,17 +348,18 @@ return 1
 
 function logic(x,y)
 {
+//This piece of code takes 2 numbers as arguments and returns the third in the list of "1,2,3".
+//The computer uses this to identify the id of the unoccuied space to be blocked. 
 num = ['1','2','3']
 num.splice(num.indexOf(x), 1)
 num.splice(num.indexOf(y), 1 )
 return num[0] 
 }
 
-function block(x,y,caller)
+function block(x,y)
 {
+//The function blocks marks the space on behalf of the computer
 	temp = document.getElementById(x+y)
-	console.log("Blocked:\nTo block: "+x+y+"\n Its class:"+temp.className)
-	console.log("Caller:"+caller)
 	if(temp.className == 'free')
 	{
 		temp.src = "o.png"
@@ -337,7 +367,6 @@ function block(x,y,caller)
 		temp.className = 'computer'
 		compSpace.push(x+y)
 		whoseTurn = 'player'
-		console.log(compSpace)	
 		filledSpaces += 1
 		return true
 
@@ -345,7 +374,7 @@ function block(x,y,caller)
 	else return false
 }
 
-function gameOver()
+function gameOver() //Executes when the game ends
 {
 	varGameOver = true
 	allSpaces = document.getElementsByTagName("img")
@@ -353,23 +382,14 @@ function gameOver()
 	allSpaces[i].onclick = ""
 }
 
-function newGame()
+function newGame()//Resets the whole board
 {
 	allSpaces = document.getElementsByTagName("img")
 	for(i=0;i<allSpaces.length;i++)
 	{
 	x = allSpaces[i].id.toString()
 	xVar = 'onClick("'+x[0]+'","'+x[1]+'")'
-	console.log(x)
 	allSpaces[i].setAttribute("onclick",xVar)
-	/*allSpaces[i].onclick = 
-	function()
-	{
-		console.log(
-		onClick(x[0].toString(),x[1].toString())
-	}*/
-	console.log(x[0],x[1])
-	console.log("onClick: "+allSpaces[i].onclick)
 	allSpaces[i].src = "white.png"
 	allSpaces[i].className = "free"
 	}
@@ -385,3 +405,9 @@ function newGame()
 	firstChance = true
 	whoseTurn = 'computer'	
 }
+/*That was it. For more such projects visit my GitHub profile:
+www.github.com/anish98821
+For short scripts and other codes visit:
+gist.github.com/anish98821
+Coded by: Anish U
+*/
