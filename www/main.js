@@ -13,7 +13,12 @@ compPoints = 0
 compSpace= []
 filledSpaces = 0
 varGameOver = false
+varSpecialCase = true
 center = document.getElementById("22")
+edgeSpaces = [document.getElementById('12'),
+			  document.getElementById('21'),
+			  document.getElementById('23'),
+			  document.getElementById('32')]
 cornerSpaces = [document.getElementById('11'),
 				document.getElementById('13'),
 				document.getElementById('31'),
@@ -44,11 +49,7 @@ function onClick(row,column)
 	{
 		if(center.className == 'free')
 		{
-		center.src = "o.png"
-		center.onclick = ''
-		center.className = 'computer'
-		compSpace.push(center.id)
-		filledSpaces += 1
+		block('2','2')
 		firstChance = false
 		return
 		}
@@ -60,12 +61,7 @@ function onClick(row,column)
 			cornerSpaces.splice(cornerSpaces.indexOf(cornerSpaces[i]), 1 )
 		}
 		selected = cornerSpaces[Math.floor(Math.random() * cornerSpaces.length)]
-		selected.src = "o.png"
-		selected.onclick = ''
-		selected.className = 'computer'
-		compSpace.push(selected.id)
-		firstChance = false
-		filledSpaces += 1
+		block(id[0],id[1])
 		return
 	}
 }
@@ -73,11 +69,12 @@ function onClick(row,column)
 // These functions are explained during their definations.
 //In short these functions check for potential straight lines on the player's side and blocks them.
 	if(allCompChecks())
+	if(specialCase() != 'blocked' && varGameOver == false)
 	if (rowCheck() != 'blocked' && varGameOver == false)
 	if (columnCheck() != 'blocked' && varGameOver == false)
 	if (rightDiagonalCheck() != 'blocked' && varGameOver == false)
 	leftDiagonalCheck()
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
 /*Something that I noticed during testing was that the player was able to win the match sometimes
 if the computer didn't mark on the corner if some of the corners were avalible. So this section ensure
  that the computer always marks the corners if they are avalible*/  
@@ -90,11 +87,7 @@ if the computer didn't mark on the corner if some of the corners were avalible. 
 	if(freeCornerSpaces.length != 0)
 	{
 	selected = freeCornerSpaces[Math.floor(Math.random() * freeCornerSpaces.length)]
-	selected.src = "o.png"
-	selected.onclick = ''
-	selected.className = 'computer'
-	filledSpaces += 1
-	compSpace.push(selected.id)
+	block(selected.id[0],selected.id[1])
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 	else
@@ -105,11 +98,7 @@ if the computer didn't mark on the corner if some of the corners were avalible. 
 	{	
 	freeSpace = document.getElementsByClassName('free')
 	selected = freeSpace[Math.floor(Math.random() * freeSpace.length)]
-	selected.src = "o.png"
-	selected.onclick = ''
-	selected.className = 'computer'
-	filledSpaces += 1
-	compSpace.push(selected.id)
+	block(selected.id[0],selected.id[1])
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
@@ -201,7 +190,7 @@ the x and y part of the id adds upto 4. I used this as an method to identify "ri
 	}
 	if(inRightDiagonal.length == 3)
 	{
-		alert("You win(rdc)")
+		alert("You win!")
 		playerPoints++
 		playerScore = document.getElementById('playerPoints')
 		playerScore.innerHTML = "Player: "+playerPoints
@@ -234,7 +223,7 @@ function leftDiagonalCheck()
 	}
 	if(inLeftDiagonal.length == 3)
 	{
-		alert("You win(ldc)")
+		alert("You win!")
 		playerPoints++
 		playerScore = document.getElementById('playerPoints')
 		playerScore.innerHTML = "Player: "+playerPoints
@@ -242,7 +231,29 @@ function leftDiagonalCheck()
 		return
 	}
 }
-
+function specialCase()
+{
+	for(i = 0; i < playerSpace.length; i++)
+	for(j = i + 1; j < playerSpace.length; j++)
+	{
+		if(varSpecialCase == true && (playerSpace[i] == '11' && playerSpace[j] == '33')||(playerSpace[i] == '13' && playerSpace[j] == '31'))
+		{
+			freeEdgeSpaces = []
+			for(i =0;i<edgeSpaces.length;i++)
+			if(edgeSpaces[i].className == "free")
+			freeEdgeSpaces.push(edgeSpaces[i])
+			if(freeEdgeSpaces.length != 0)
+			{
+			selected = freeEdgeSpaces[Math.floor(Math.random() * freeEdgeSpaces.length)]	
+			}
+			block(selected.id[0],selected.id[1])
+			varSpecialCase = false
+			return 'blocked'
+		
+		}
+	}
+	
+}
 function allCompChecks()
 {
 /*Basically a combination of all previous checks but instead checks on the computer occupied space and blocks itself.
