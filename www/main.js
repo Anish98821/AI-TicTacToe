@@ -357,7 +357,16 @@ function specialCase()
 	for(i = 0; i < playerSpace.length; i++)
 	for(j = i + 1; j < playerSpace.length; j++)
 	{
-		if(varSpecialCase == true && (playerSpace[i] == '11' && playerSpace[j] == '33')||(playerSpace[i] == '13' && playerSpace[j] == '31'))
+		if//Broken down the conditions to diffrent lines so that it will be easy to under
+		(
+		varSpecialCase == true && 
+		(
+		((playerSpace[i] == '11' && playerSpace[j] == '33')||(playerSpace[j] == '11' && playerSpace[i] == '33'))
+		//Checks for an left diagonal.The 'or' condition in between ensures that this block executes no matter what order the buttons are pressed
+		 ||
+		((playerSpace[i] == '13' && playerSpace[j] == '31')||playerSpace[j] == '13' && playerSpace[i] == '31'))
+		//Similarly checks for right diagonal
+		)
 		{
 			freeEdgeSpaces = []
 			for(i =0;i<edgeSpaces.length;i++)
@@ -367,6 +376,7 @@ function specialCase()
 			{
 			selected = freeEdgeSpaces[Math.floor(Math.random() * freeEdgeSpaces.length)]	
 			}
+			varSpecialCase = false
 			block(selected.id[0],selected.id[1])
 			varSpecialCase = false
 			return 'blocked'
@@ -426,6 +436,7 @@ function newGame()//Resets the whole board
 	compSpace= []
 	filledSpaces = 0
 	varGameOver = false
+	varSpecialCase = true
 	cornerSpaces = [document.getElementById('11'),
 					document.getElementById('13'),
 					document.getElementById('31'),
